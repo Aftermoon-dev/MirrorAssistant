@@ -264,7 +264,7 @@ font: 9pt &quot;NanumGothic&quot;;</string>
    <property name="checkable">
     <bool>false</bool>
    </property>
-   <widget class="QLabel" name="label">
+   <widget class="QLabel" name="temp">
     <property name="geometry">
      <rect>
       <x>110</x>

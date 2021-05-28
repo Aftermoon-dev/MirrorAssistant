@@ -6,12 +6,14 @@ from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtWidgets import *
 from PyQt5 import uic
 from covid19.covid19 import Covid19
+from weather.weather import Weather
 from news.news import News
 
 uiFile = uic.loadUiType("ui/main.ui")[0]
 
 
 class WindowClass(QMainWindow, uiFile):
+    weather = Weather()
     covid19 = Covid19()
     news = News()
 
@@ -25,6 +27,8 @@ class WindowClass(QMainWindow, uiFile):
         self.setWindowTitle("MirrorAssistant")
 
         self.setupUi(self)
+
+        print(self.weather.getDustInfo())
 
         # 시계 설정
         self.setDateTime()
@@ -50,6 +54,14 @@ class WindowClass(QMainWindow, uiFile):
         self.covidTimer = QTimer(interval=1000, timeout=schedule.run_pending)
         self.covidTimer.start()
         schedule.run_pending()
+
+        # 날씨 정보 설정
+        self.setWeatherData()
+
+        # 1시간마다 새로고침
+        self.weatherTimer = QTimer()
+        self.weatherTimer.start(3600000)
+        self.weatherTimer.timeout.connect(self.setWeatherData)
 
     # 시간 설정
     def setDateTime(self):
@@ -93,6 +105,15 @@ class WindowClass(QMainWindow, uiFile):
             '<html><head/><body><p><span style=" color:#ffffff;">' + '코로나 확진자 수 : {0} / 사망자 수 : {1}'.format(
                 self.covid19.getTodayDecideCount(), self.covid19.getTodayDeathCount()) +
             '</span></p></body></html>')
+
+    def setWeatherData(self):
+        print('setWeatherData')
+
+        weather = self.weather.getWeatherInfo()
+        self.temp.setText(
+            '<html><head/><body><p align="center"><span style=" font-size:48pt; color:#ffffff;">{0}℃</span></p></body></html>'.format(weather['T1H'])
+        )
+
 
 
 if __name__ == "__main__":
