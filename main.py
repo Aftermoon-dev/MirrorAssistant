@@ -28,8 +28,6 @@ class WindowClass(QMainWindow, uiFile):
 
         self.setupUi(self)
 
-        print(self.weather.getDustInfo())
-
         # 시계 설정
         self.setDateTime()
 
@@ -102,7 +100,7 @@ class WindowClass(QMainWindow, uiFile):
         print('setCovidData')
 
         self.news_6.setText(
-            '<html><head/><body><p><span style=" color:#ffffff;">' + '코로나 확진자 수 : {0} / 사망자 수 : {1}'.format(
+            '<html><head/><body><p><span style=" font-size:12pt; color:#ffffff;">' + '코로나 확진자 수 : {0} / 사망자 수 : {1}'.format(
                 self.covid19.getTodayDecideCount(), self.covid19.getTodayDeathCount()) +
             '</span></p></body></html>')
 
@@ -111,9 +109,18 @@ class WindowClass(QMainWindow, uiFile):
 
         weather = self.weather.getWeatherInfo()
         self.temp.setText(
-            '<html><head/><body><p align="center"><span style=" font-size:48pt; color:#ffffff;">{0}℃</span></p></body></html>'.format(weather['T1H'])
+            '<html><head/><body><p align="center"><span style=" font-size:48pt; color:#ffffff;">{0}℃</span></p></body></html>'.format(
+                weather['T1H'])
         )
 
+        dustData = self.weather.getDustInfo()
+        self.dust.setText(
+            '<html><head/><body><p><span style=" font-size:12pt;">미세먼지 : {0} ({1}) / 초미세먼지 : {2} ({3}) </span></p></body></html>'
+                .format(dustData['pm10'],
+                        self.weather.pm10Calculator(dustData['pm10']),
+                        dustData['pm25'],
+                        self.weather.pm25Calculator(dustData['pm25']))
+        )
 
 
 if __name__ == "__main__":

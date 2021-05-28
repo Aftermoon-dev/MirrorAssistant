@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 import time
 import json
 
+
 class Weather:
     def __init__(self):
         # Service Key 불러오기
@@ -16,8 +17,36 @@ class Weather:
         self.time_date_Dust = time.strftime('%Y-%m-%d', time.localtime(time.time()))
 
     def getWeatherHour(self):
-        hours = (date.today() - timedelta(hours=1)).strftime('%H00')
+        hours = (date.today() - timedelta(hours=2)).strftime('%H00')
         return hours
+
+    def pm10Calculator(self, pm10):
+        pm10 = int(pm10)
+
+        if 0 <= pm10 <= 30:
+            return '좋음'
+        elif 31 <= pm10 <= 80:
+            return '보통'
+        elif 81 <= pm10 <= 150:
+            return '나쁨'
+        elif 151 <= pm10:
+            return '매우 나쁨'
+        else:
+            return '알 수 없음'
+
+    def pm25Calculator(self, pm25):
+        pm25 = int(pm25)
+
+        if 0 <= pm25 <= 15:
+            return '좋음'
+        elif 16 <= pm25 <= 35:
+            return '보통'
+        elif 36 <= pm25 <= 75:
+            return '나쁨'
+        elif 76 <= pm25:
+            return '매우 나쁨'
+        else:
+            return '알 수 없음'
 
     def getWeatherInfo(self):
         # 날씨 크롤링을 위한 요청 메시지값들
@@ -25,7 +54,7 @@ class Weather:
         url = 'http://apis.data.go.kr/1360000/VilageFcstInfoService/getUltraSrtNcst'
         queryParams_weather = '?' + \
                               'ServiceKey=' + self.weatherKey + \
-                              '&numOfRows=' + '10' + \
+                              '&numOfRows=' + '5' + \
                               '&pageNo=' + '1' + \
                               '&dataType=' + 'JSON' + \
                               '&base_date=' + self.time_date_Weather + \
@@ -62,33 +91,33 @@ class Weather:
 
         return returnData
 
-
     def getDustInfo(self):
         # 미세먼지 크롤링을 위한 요청 메시지값들
-        url = 'http://apis.data.go.kr/B552584/ArpltnInforInqireSvc/getCtprvnRltmMesureDnsty'
+        url = 'http://apis.data.go.kr/B552584/ArpltnInforInqireSvc/getMsrstnAcctoRltmMesureDnsty'
         queryParams_dust = '?' + \
                            'ServiceKey=' + self.weatherKey + \
                            '&returnType=' + 'JSON' + \
-                           '&numOfRows=' + '100' + \
+                           '&numOfRows=' + '1' + \
                            '&pageNo=' + '1' + \
-                           '&sidoName=경기&ver=1.0'
+                           '&stationName=복정동' + \
+                           '&dataTerm=DAILY&ver=1.0'
 
         # 미세먼지 크롤링 출력
         result_dust = requests.get(url + queryParams_dust)
         bs_obj_dust = BeautifulSoup(result_dust.content, "html.parser")
 
         dustJson = json.loads(str(bs_obj_dust))
+
         dustDataList = dustJson['response']['body']['items']
 
         returnData = {}
         for dustData in dustDataList:
-            if dustData['stationName'] == '복정동':
-                returnData['so2'] = dustData['so2Value']
-                returnData['co'] = dustData['coValue']
-                returnData['o3'] = dustData['o3Value']
-                returnData['no2'] = dustData['no2Value']
-                returnData['pm10'] = dustData['pm10Value']
-                returnData['pm25'] = dustData['pm25Value']
-                break
+            returnData['so2'] = dustData['so2Value']
+            returnData['co'] = dustData['coValue']
+            returnData['o3'] = dustData['o3Value']
+            returnData['no2'] = dustData['no2Value']
+            returnData['pm10'] = dustData['pm10Value']
+            returnData['pm25'] = dustData['pm25Value']
+            break
 
         return returnData

@@ -51,7 +51,7 @@
 color: rgb(255, 255, 255);
 font: 9pt &quot;NanumGothic&quot;;</string>
   </property>
-  <widget class="QGroupBox" name="Location1">
+  <widget class="QGroupBox" name="weatherPanel">
    <property name="geometry">
     <rect>
      <x>10</x>
@@ -268,7 +268,7 @@ font: 9pt &quot;NanumGothic&quot;;</string>
     <property name="geometry">
      <rect>
       <x>110</x>
-      <y>70</y>
+      <y>20</y>
       <width>231</width>
       <height>111</height>
      </rect>
@@ -282,8 +282,21 @@ font: 9pt &quot;NanumGothic&quot;;</string>
      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:48pt; color:#ffffff;&quot;&gt;32℃&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
    </widget>
+   <widget class="QLabel" name="dust">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>230</y>
+      <width>371</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;미세먼지 : 46 (보통) / 초미세먼지 : 22 (보통)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
+   </widget>
   </widget>
-  <widget class="QGroupBox" name="Location2">
+  <widget class="QGroupBox" name="timePanel">
    <property name="geometry">
     <rect>
      <x>530</x>
@@ -533,7 +546,7 @@ font: 9pt &quot;NanumGothic&quot;;</string>
     </property>
    </widget>
   </widget>
-  <widget class="QGroupBox" name="Location3">
+  <widget class="QGroupBox" name="textPanel">
    <property name="geometry">
     <rect>
      <x>10</x>
@@ -741,7 +754,7 @@ font: 9pt &quot;NanumGothic&quot;;</string>
     <string/>
    </property>
   </widget>
-  <widget class="QGroupBox" name="Location4">
+  <widget class="QGroupBox" name="newsPanel">
    <property name="geometry">
     <rect>
      <x>530</x>
@@ -902,10 +915,14 @@ font: 9pt &quot;NanumGothic&quot;;</string>
     <property name="font">
      <font>
       <family>NanumGothic</family>
+      <pointsize>9</pointsize>
+      <weight>50</weight>
+      <italic>false</italic>
+      <bold>false</bold>
      </font>
     </property>
     <property name="text">
-     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#ffffff;&quot;&gt;05월 20일 코로나 확진자 수 : 646 / 사망자 수 : 4&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:11pt; color:#ffffff;&quot;&gt;05월 20일 코로나 확진자 수 : 646 / 사망자 수 : 4&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
    </widget>
   </widget>
