@@ -3,6 +3,7 @@ import datetime
 
 import schedule
 from PyQt5.QtCore import Qt, QTimer
+from PyQt5.QtGui import QPixmap, QIcon
 from PyQt5.QtWidgets import *
 from PyQt5 import uic
 from covid19.covid19 import Covid19
@@ -109,18 +110,18 @@ class WindowClass(QMainWindow, uiFile):
 
         weather = self.weather.getWeatherInfo()
         self.temp.setText(
-            '<html><head/><body><p align="center"><span style=" font-size:48pt; color:#ffffff;">{0}℃</span></p></body></html>'.format(
-                weather['T1H'])
-        )
+            '<html><head/><body><p align="center"><span style=" font-size:48pt; color:#ffffff;">{0}℃</span></p></body></html>'.format(weather['temp']))
+
+        self.weather_desc.setText('<html><head/><body><p align="center"><span style=" font-size:22pt;">{0}</span></p></body></html>'.format(weather['weatherKR']))
+
+        weatherIcon = QPixmap()
+        weatherIcon.loadFromData(self.weather.getImage(weather['icon']))
+        self.weather_icon.setPixmap(weatherIcon)
 
         dustData = self.weather.getDustInfo()
         self.dust.setText(
             '<html><head/><body><p><span style=" font-size:12pt;">미세먼지 : {0} ({1}) / 초미세먼지 : {2} ({3}) </span></p></body></html>'
-                .format(dustData['pm10'],
-                        self.weather.pm10Calculator(dustData['pm10']),
-                        dustData['pm25'],
-                        self.weather.pm25Calculator(dustData['pm25']))
-        )
+                .format(dustData['pm10'], self.weather.pm10Calculator(dustData['pm10']), dustData['pm25'], self.weather.pm25Calculator(dustData['pm25'])))
 
 
 if __name__ == "__main__":

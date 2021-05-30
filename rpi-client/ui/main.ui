@@ -267,10 +267,10 @@ font: 9pt &quot;NanumGothic&quot;;</string>
    <widget class="QLabel" name="temp">
     <property name="geometry">
      <rect>
-      <x>110</x>
-      <y>20</y>
-      <width>231</width>
-      <height>111</height>
+      <x>260</x>
+      <y>30</y>
+      <width>161</width>
+      <height>101</height>
      </rect>
     </property>
     <property name="font">
@@ -279,7 +279,7 @@ font: 9pt &quot;NanumGothic&quot;;</string>
      </font>
     </property>
     <property name="text">
-     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:48pt; color:#ffffff;&quot;&gt;32℃&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:48pt;&quot;&gt;32C&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
    </widget>
    <widget class="QLabel" name="dust">
@@ -295,6 +295,36 @@ font: 9pt &quot;NanumGothic&quot;;</string>
      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;미세먼지 : 46 (보통) / 초미세먼지 : 22 (보통)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
    </widget>
+   <widget class="QLabel" name="weather_icon">
+    <property name="geometry">
+     <rect>
+      <x>90</x>
+      <y>0</y>
+      <width>200</width>
+      <height>150</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="weather_desc">
+    <property name="geometry">
+     <rect>
+      <x>140</x>
+      <y>150</y>
+      <width>221</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:22pt;&quot;&gt;실 비&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
+   </widget>
+   <zorder>weather_icon</zorder>
+   <zorder>temp</zorder>
+   <zorder>dust</zorder>
+   <zorder>weather_desc</zorder>
   </widget>
   <widget class="QGroupBox" name="timePanel">
    <property name="geometry">

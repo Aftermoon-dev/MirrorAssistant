@@ -1,4 +1,7 @@
+import os
+import urllib
 from datetime import timedelta, date
+from urllib import request
 
 import requests
 from bs4 import BeautifulSoup
@@ -10,7 +13,11 @@ class Weather:
     def __init__(self):
         # Service Key 불러오기
         serviceKeyFile = open('./weather/servicekey.txt', 'r')
-        self.weatherKey = serviceKeyFile.readline()
+        self.dustKey = serviceKeyFile.readline()
+
+        # Service Key 불러오기
+        weatherServiceKeyFile = open('./weather/weatherservicekey.txt', 'r')
+        self.weatherKey = weatherServiceKeyFile.readline()
 
         # base_date와 base_time을 위한 변수 선언
         self.time_date_Weather = time.strftime('%Y%m%d', time.localtime(time.time()))
@@ -50,44 +57,33 @@ class Weather:
 
     def getWeatherInfo(self):
         # 날씨 크롤링을 위한 요청 메시지값들
-
-        url = 'http://apis.data.go.kr/1360000/VilageFcstInfoService/getUltraSrtNcst'
+        url = 'http://api.openweathermap.org/data/2.5/weather'
         queryParams_weather = '?' + \
-                              'ServiceKey=' + self.weatherKey + \
-                              '&numOfRows=' + '5' + \
-                              '&pageNo=' + '1' + \
-                              '&dataType=' + 'JSON' + \
-                              '&base_date=' + self.time_date_Weather + \
-                              '&base_time=' + self.getWeatherHour() + \
-                              '&nx=' + '62' + \
-                              '&ny=' + '124'
+                              'appid=' + self.weatherKey + \
+                              '&id=1835848' + \
+                              '&lang=kr' + \
+                              '&units=metric'
 
         # 날씨 크롤링 출력
         result_weather = requests.get(url + queryParams_weather)
         bs_obj_weather = BeautifulSoup(result_weather.content, "html.parser")
 
         weatherJson = json.loads(str(bs_obj_weather))
-        weatherDataList = weatherJson['response']['body']['items']['item']
+
+        print(weatherJson)
+        weatherData = weatherJson['weather'][0]
+
+        mainData = weatherJson['main']
+
+        print(weatherData)
+        print(mainData)
 
         returnData = {}
-        for weatherData in weatherDataList:
-            category = weatherData['category']
-            if category == 'PTY':
-                returnData['PTY'] = weatherData['obsrValue']
-            elif category == 'REH':
-                returnData['REH'] = weatherData['obsrValue']
-            elif category == 'RN1':
-                returnData['RN1'] = weatherData['obsrValue']
-            elif category == 'T1H':
-                returnData['T1H'] = weatherData['obsrValue']
-            elif category == 'UUU':
-                returnData['UUU'] = weatherData['obsrValue']
-            elif category == 'VEC':
-                returnData['VEC'] = weatherData['obsrValue']
-            elif category == 'VVV':
-                returnData['VVV'] = weatherData['obsrValue']
-            elif category == 'WSD':
-                returnData['WSD'] = weatherData['obsrValue']
+        returnData['weatherKR'] = weatherData['description']
+        returnData['weather'] = weatherData['main']
+        returnData['icon'] = weatherData['icon']
+        returnData['temp'] = round(float(mainData['temp']))
+        returnData['humidity'] = mainData['humidity']
 
         return returnData
 
@@ -95,7 +91,7 @@ class Weather:
         # 미세먼지 크롤링을 위한 요청 메시지값들
         url = 'http://apis.data.go.kr/B552584/ArpltnInforInqireSvc/getMsrstnAcctoRltmMesureDnsty'
         queryParams_dust = '?' + \
-                           'ServiceKey=' + self.weatherKey + \
+                           'ServiceKey=' + self.dustKey + \
                            '&returnType=' + 'JSON' + \
                            '&numOfRows=' + '1' + \
                            '&pageNo=' + '1' + \
@@ -106,6 +102,7 @@ class Weather:
         result_dust = requests.get(url + queryParams_dust)
         bs_obj_dust = BeautifulSoup(result_dust.content, "html.parser")
 
+        print(bs_obj_dust)
         dustJson = json.loads(str(bs_obj_dust))
 
         dustDataList = dustJson['response']['body']['items']
@@ -121,3 +118,10 @@ class Weather:
             break
 
         return returnData
+
+    def getImage(self, weatherCode):
+        url = 'http://openweathermap.org/img/wn/{0}@4x.png'.format(weatherCode)
+
+        imageFromWeb = urllib.request.urlopen(url).read()
+
+        return imageFromWeb
