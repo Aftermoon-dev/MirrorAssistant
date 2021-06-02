@@ -7,7 +7,7 @@ import numpy as np
 class Face:
     def __init__(self):
         # Using Camera 0
-        video = cv2.VideoCapture(0)
+        self.video = cv2.VideoCapture(0)
 
         # 얼굴 사진 폴더가 있다면
         if os.path.isdir("./faceimg"):
