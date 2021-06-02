@@ -59,8 +59,6 @@ class Face:
             # 얼굴 위치 로드
             self.face_locations = face_recognition.face_locations(rgb_small_frame)
 
-            print(self.face_locations)
-
             # 얼굴 인코딩
             self.face_encodings = face_recognition.face_encodings(rgb_small_frame, self.face_locations)
 
@@ -74,7 +72,6 @@ class Face:
 
                 # 가장 유사한 얼굴 Index 찾음
                 best_match_index = np.argmin(face_distances)
-                print(best_match_index)
 
                 # 매치가 된다면
                 if matches[best_match_index]:

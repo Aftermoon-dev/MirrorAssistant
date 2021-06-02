@@ -64,6 +64,7 @@ class WindowClass(QMainWindow, uiFile):
         self.weatherTimer.timeout.connect(self.setWeatherData)
 
         # 얼굴 인식 쓰레드 시작
+        self.currentFace = None
         self.faceThread = FaceThread()
         self.faceThread.start()
         self.faceThread.currentFace.connect(self.setFaceUI)
@@ -124,6 +125,7 @@ class WindowClass(QMainWindow, uiFile):
 
     @pyqtSlot(str)
     def setFaceUI(self, data):
+        self.currentFace = data
         print('New Face Detected :', data)
 
 # 얼굴 인식 Thread
