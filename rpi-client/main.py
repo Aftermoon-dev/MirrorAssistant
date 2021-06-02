@@ -124,7 +124,7 @@ class WindowClass(QMainWindow, uiFile):
 
     @pyqtSlot(str)
     def setFaceUI(self, data):
-        print(data)
+        print('New Face Detected :', data)
 
 # 얼굴 인식 Thread
 class FaceThread(QThread):
@@ -137,10 +137,11 @@ class FaceThread(QThread):
 
         # 무한 Loop
         while True:
+            newFace = self.face.recognitionFace()
             # 이전 얼굴이랑 인식 얼굴 파일명이 다르면
-            if beforeFace != self.face.recognitionFace():
+            if beforeFace != newFace:
                 # 이전 얼굴을 새로 설정
-                beforeFace = self.face.recognitionFace()
+                beforeFace = newFace
 
                 # 변화를 Emit
                 self.currentFace.emit(beforeFace)
