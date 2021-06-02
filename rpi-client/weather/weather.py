@@ -70,13 +70,9 @@ class Weather:
 
         weatherJson = json.loads(str(bs_obj_weather))
 
-        print(weatherJson)
         weatherData = weatherJson['weather'][0]
 
         mainData = weatherJson['main']
-
-        print(weatherData)
-        print(mainData)
 
         returnData = {}
         returnData['weatherKR'] = weatherData['description']
@@ -102,7 +98,6 @@ class Weather:
         result_dust = requests.get(url + queryParams_dust)
         bs_obj_dust = BeautifulSoup(result_dust.content, "html.parser")
 
-        print(bs_obj_dust)
         dustJson = json.loads(str(bs_obj_dust))
 
         dustDataList = dustJson['response']['body']['items']

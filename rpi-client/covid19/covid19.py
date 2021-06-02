@@ -15,8 +15,6 @@ class Covid19:
         # 오늘 날짜
         todayDate = datetime.today()
 
-        print(todayDate.strftime("%H%M%S"))
-
         if int(todayDate.strftime("%H%M%S")) > 103000:
             startDate = (todayDate - timedelta(days=1)).strftime("%Y%m%d")
             endDate = todayDate.strftime("%Y%m%d")

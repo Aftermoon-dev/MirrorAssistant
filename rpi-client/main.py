@@ -2,7 +2,7 @@ import sys
 import datetime
 
 import schedule
-from PyQt5.QtCore import Qt, QTimer
+from PyQt5.QtCore import Qt, QTimer, QThread, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import *
 from PyQt5 import uic
@@ -63,17 +63,13 @@ class WindowClass(QMainWindow, uiFile):
         self.weatherTimer.start(3600000)
         self.weatherTimer.timeout.connect(self.setWeatherData)
 
-        # 얼굴 인식 설정
-        self.face = Face()
-
-        # 0.1초 간격으로 새로고침
-        self.faceTimer = QTimer()
-        self.faceTimer.start(100)
-        self.faceTimer.timeout.connect(self.findFace)
+        # 얼굴 인식 쓰레드 시작
+        self.faceThread = FaceThread()
+        self.faceThread.start()
+        self.faceThread.currentFace.connect(self.setFaceUI)
 
     # 시간 설정
     def setDateTime(self):
-        print('setDateTime')
         now = datetime.datetime.now()
         self.currentDate.setText(
             '<html><head/><body><p align="center"><span style=" font-size:22pt; font-weight:600; color:#ffffff;">' + now.strftime(
@@ -85,8 +81,6 @@ class WindowClass(QMainWindow, uiFile):
             '</span></p></body></html>')
 
     def setNewsData(self):
-        print('setNewsData')
-
         newsList = self.news.getRecentNewsTitleList(self.news.newRss)
 
         self.news_1.setText(
@@ -107,16 +101,12 @@ class WindowClass(QMainWindow, uiFile):
 
     # 코로나 데이터 설정
     def setCovidData(self):
-        print('setCovidData')
-
         self.news_6.setText(
             '<html><head/><body><p><span style=" font-size:12pt; color:#ffffff;">' + '코로나 확진자 수 : {0} / 사망자 수 : {1}'.format(
                 self.covid19.getTodayDecideCount(), self.covid19.getTodayDeathCount()) +
             '</span></p></body></html>')
 
     def setWeatherData(self):
-        print('setWeatherData')
-
         weather = self.weather.getWeatherInfo()
         self.temp.setText(
             '<html><head/><body><p align="center"><span style=" font-size:48pt; color:#ffffff;">{0}℃</span></p></body></html>'.format(weather['temp']))
@@ -132,13 +122,31 @@ class WindowClass(QMainWindow, uiFile):
             '<html><head/><body><p><span style=" font-size:12pt;">미세먼지 : {0} ({1}) / 초미세먼지 : {2} ({3}) </span></p></body></html>'
                 .format(dustData['pm10'], self.weather.pm10Calculator(dustData['pm10']), dustData['pm25'], self.weather.pm25Calculator(dustData['pm25'])))
 
-    def findFace(self):
-        print(self.face.recognitionFace())
+    @pyqtSlot(str)
+    def setFaceUI(self, data):
+        print(data)
 
+# 얼굴 인식 Thread
+class FaceThread(QThread):
+    face = Face()
+    currentFace = pyqtSignal(str)
+
+    def run(self):
+        # 이전 얼굴 설정 (기본 None)
+        beforeFace = None
+
+        # 무한 Loop
+        while True:
+            # 이전 얼굴이랑 인식 얼굴 파일명이 다르면
+            if beforeFace != self.face.recognitionFace():
+                # 이전 얼굴을 새로 설정
+                beforeFace = self.face.recognitionFace()
+
+                # 변화를 Emit
+                self.currentFace.emit(beforeFace)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     mainWindow = WindowClass()
     mainWindow.show()
-    mainWindow.face.cameraRelease()
     sys.exit(app.exec_())
