@@ -24,6 +24,7 @@ class Face:
 
         # 이미지 처리 시작
         self.frEncodingList = []
+
         for imgFileName in self.faceImageList:
             # 파일 이름을 통해 이미지 불러오기
             loadImg = face_recognition.load_image_file('./faceimg/{0}'.format(imgFileName))
@@ -32,7 +33,7 @@ class Face:
             loadImgEncoding = face_recognition.face_encodings(loadImg)[0]
 
             # 인코딩 정보를 리스트에 Append
-            self.frEncodingList.append(face_recognition.load_image_file(loadImgEncoding))
+            self.frEncodingList.append(loadImgEncoding)
 
     # 얼굴 인식
     # 해당 함수는 무한 Loop가 필요함
