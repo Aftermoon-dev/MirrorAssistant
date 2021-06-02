@@ -3,12 +3,13 @@ import datetime
 
 import schedule
 from PyQt5.QtCore import Qt, QTimer
-from PyQt5.QtGui import QPixmap, QIcon
+from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import *
 from PyQt5 import uic
 from covid19.covid19 import Covid19
 from weather.weather import Weather
 from news.news import News
+from face.face import Face
 
 uiFile = uic.loadUiType("ui/main.ui")[0]
 
@@ -61,6 +62,14 @@ class WindowClass(QMainWindow, uiFile):
         self.weatherTimer = QTimer()
         self.weatherTimer.start(3600000)
         self.weatherTimer.timeout.connect(self.setWeatherData)
+
+        # 얼굴 인식 설정
+        self.face = Face()
+
+        # 0.1초 간격으로 새로고침
+        self.faceTimer = QTimer()
+        self.faceTimer.start(100)
+        self.faceTimer.timeout.connect(self.findFace)
 
     # 시간 설정
     def setDateTime(self):
@@ -123,9 +132,13 @@ class WindowClass(QMainWindow, uiFile):
             '<html><head/><body><p><span style=" font-size:12pt;">미세먼지 : {0} ({1}) / 초미세먼지 : {2} ({3}) </span></p></body></html>'
                 .format(dustData['pm10'], self.weather.pm10Calculator(dustData['pm10']), dustData['pm25'], self.weather.pm25Calculator(dustData['pm25'])))
 
+    def findFace(self):
+        print(self.face.recognitionFace())
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     mainWindow = WindowClass()
     mainWindow.show()
+    mainWindow.face.cameraRelease()
     sys.exit(app.exec_())
