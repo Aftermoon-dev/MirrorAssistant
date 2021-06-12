@@ -89,4 +89,20 @@ class Face:
         self.video.release()
         cv2.destroyAllWindows()
 
+    # 이미지 목록 새로고침
+    def refreshImageList(self):
+        print('Refresh Image List...')
 
+        # 새로운 리스트 불러오기
+        self.faceImageList = os.listdir("./faceimg")
+
+        # 이미지 인코딩 리스트 처리
+        for imgFileName in self.faceImageList:
+            # 파일 이름을 통해 이미지 불러오기
+            loadImg = face_recognition.load_image_file('./faceimg/{0}'.format(imgFileName))
+
+            # 얼굴 인식을 위한 인코딩 처리
+            loadImgEncoding = face_recognition.face_encodings(loadImg)[0]
+
+            # 인코딩 정보를 리스트에 Append
+            self.frEncodingList.append(loadImgEncoding)
