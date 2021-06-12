@@ -165,6 +165,7 @@ class WindowClass(QMainWindow, uiFile):
             settingDict['noti'] = 2
         finally:
             # 레이아웃 설정
+            print(settingDict)
             self.setLayout(settingDict)
 
     # 얼굴 파일 새로고침 요청
@@ -176,10 +177,10 @@ class WindowClass(QMainWindow, uiFile):
     # 0 - 왼쪽 위 / 1 - 오른쪽 위 / 2 - 왼쪽 아래 / 3 - 오른쪽 아래
     def setLayout(self, settingDict):
         layoutPosition = [[10, 20], [530, 20], [10, 320], [530, 320]]
-        self.timePanel.move(layoutPosition[settingDict['clock']][0], [settingDict['clock']][1])
-        self.weatherPanel.move(layoutPosition[settingDict['weather']][0], [settingDict['weather']][1])
-        self.newsPanel.move(layoutPosition[settingDict['news']][0], [settingDict['news']][1])
-        self.textPanel.move(layoutPosition[settingDict['noti']][0], [settingDict['noti']][1])
+        self.timePanel.move(layoutPosition[settingDict['clock']][0], layoutPosition[settingDict['clock']][1])
+        self.weatherPanel.move(layoutPosition[settingDict['weather']][0], layoutPosition[settingDict['weather']][1])
+        self.newsPanel.move(layoutPosition[settingDict['news']][0], layoutPosition[settingDict['news']][1])
+        self.textPanel.move(layoutPosition[settingDict['noti']][0], layoutPosition[settingDict['noti']][1])
 
 # 얼굴 인식 Thread
 class FaceThread(QThread):
