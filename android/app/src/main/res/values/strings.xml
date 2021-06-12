@@ -1,3 +1,15 @@
 <resources>
     <string name="app_name">MirrorAssistant</string>
+    <string name="setting">설정</string>
+
+    <string name="connect">연결</string>
+    <string name="connect_title">MirrorAssistant와 연결</string>
+    <string name="connect_msg">MirrorAssistant의 아래에 표시되는 주소를 입력해주세요.</string>
+    <string name="connect_hint">http://192.168.0.22:8000/</string>
+
+    <string name="menu_image">사용자 설정</string>
+    <string name="menu_image_nodata">설정된 얼굴이 없습니다.</string>
+    <string name="menu_image_add">새 얼굴 추가하기</string>
+
+    <string name="menu_layout">레이아웃 설정</string>
 </resources>

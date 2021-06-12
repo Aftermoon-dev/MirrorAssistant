@@ -252,6 +252,13 @@ class ApiServerThread(QThread):
 
                 # 새 사진 추가 알림
                 self.newPhotoAdded.emit(True)
+
+                # 성공
+                return jsonify(
+                    code=200,
+                    success=True,
+                    msg='OK'
+                )
             except:
                 # 에러 발생시 500
                 return jsonify(
@@ -328,8 +335,34 @@ class ApiServerThread(QThread):
             return jsonify(
                 code=200,
                 success=True,
-                facelist=returnlist
+                facelist=returnlist,
+                msg='OK'
             )
+
+        # 안드로이드 Client에서 MirrorAssistant 체크
+        @self.flaskApp.route('/androidCheck')
+        def mirrorAssistantCheck():
+            return jsonify(
+                code=200,
+                success=True,
+                msg='OK'
+            )
+
+        # Notification 받기
+        @self.flaskApp.route('/newnoti', methods=['POST'])
+        def newNotification():
+            # Param Json으로 로드
+            params = json.loads(request.get_data(), encoding='utf-8')
+
+            # 길이 0이면 500
+            if len(params) == 0:
+                return jsonify(
+                    code=500,
+                    success=False,
+                    msg='Empty Parameter'
+                )
+
+
 
         # Flask Run
         self.flaskApp.run(host="0.0.0.0", debug=True, use_reloader=False)
