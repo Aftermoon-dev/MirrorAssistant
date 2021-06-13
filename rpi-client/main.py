@@ -34,7 +34,11 @@ class WindowClass(QMainWindow, uiFile):
         # 타이틀 설정
         self.setWindowTitle("MirrorAssistant")
 
+        # UI 설정
         self.setupUi(self)
+
+        # 알림 담을 List
+        self.notificationList = []
 
         # Windows가 아니라면 (Test Enviroment)
         if platform.system() != 'Windows':
@@ -193,10 +197,26 @@ class WindowClass(QMainWindow, uiFile):
         self.faceThread.requestRefresh = data
 
     # 새 알림 정보 추가
+    # [시간] [타이틀] 메시지
+    # [23:12] [ㅇㅇ] ㅇㅇ
     @pyqtSlot(dict)
     def newNotification(self, data):
-        print(data)
+        print('new notification received', data)
 
+        # 앞에다 추가함
+        self.notificationList.insert(0, data)
+
+        # 최대 길이인 7개 이상인 경우
+        if len(self.notificationList) > 7:
+            # 마지막 요소 제거
+            self.notificationList.pop()
+
+        # 각 Label 설정
+        notiLabels = [self.noti_1, self.noti_2, self.noti_3, self.noti_4, self.noti_5, self.noti_6, self.noti_7]
+        i = 0
+        for notification in self.notificationList:
+            notiLabels[i].setText('<html><head/><body><p><span style=" font-size:12pt; font-weight:600;">[{}] [{}] {}</span></p></body></html>'.format(notification['time'], notification['title'], notification['msg']))
+            i += 1
 
     # Layout Position 설정
     # 0 - 왼쪽 위 / 1 - 오른쪽 위 / 2 - 왼쪽 아래 / 3 - 오른쪽 아래
@@ -386,7 +406,7 @@ class ApiServerThread(QThread):
                     msg='Empty Parameter'
                 )
 
-            # 알림 정보 전송
+            # 알림 정보를 UI에 넘김
             notiDict = {}
             notiDict['title'] = params['title']
             notiDict['msg'] = params['msg']
