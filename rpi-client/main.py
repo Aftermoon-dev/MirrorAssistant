@@ -16,6 +16,7 @@ from covid19.covid19 import Covid19
 from weather.weather import Weather
 from news.news import News
 from face.face import Face
+from face.db import FaceDatabase
 
 uiFile = uic.loadUiType("ui/main.ui")[0]
 
@@ -136,26 +137,26 @@ class WindowClass(QMainWindow, uiFile):
     # 얼굴에 따른 레이아웃 설정
     @pyqtSlot(str)
     def setFaceUI(self, data):
+        # ID 반환됨
         self.currentFace = data
 
-        # 확장자명 제거
-        faceName = Path(data).stem
-        print('New Face Detected :', faceName)
+        print('New Face Detected :', data)
 
         # 설정 담을 Dictonary
         settingDict = {}
 
         try:
-            # 설정 파일 열기
-            settingFile = open('./facesetting/' + faceName + '.ini')
+            faceDatabase = FaceDatabase()
 
-            # 모든 줄 읽기
-            settingList = settingFile.readlines()
+            # 파일명이 곧 ID이므로 해당 정보로 getProfile
+            profileData = faceDatabase.getProfile(data)
 
-            # 각 줄에서 설정에 따라 Dictionary에 담음
-            for settingElement in settingList:
-                elements = settingElement.split('=')
-                settingDict[elements[0]] = int(elements[1])
+            settingDict['clock'] = profileData[3]
+            settingDict['news'] = profileData[4]
+            settingDict['weather'] = profileData[5]
+            settingDict['noti'] = profileData[6]
+
+            faceDatabase.close()
         # 에러 발생시
         except:
             # 딕셔너리에 기본 Layout
@@ -198,7 +199,7 @@ class FaceThread(QThread):
             if not self.requestRefresh:
                 # 얼굴 인식 처리
                 newFace = self.face.recognitionFace()
-                # 이전 얼굴이랑 인식 얼굴 파일명이 다르면
+                # 이전 얼굴이랑 인식 얼굴 번호가 다르면
                 if beforeFace != newFace:
                     # 이전 얼굴을 새로 설정
                     beforeFace = newFace
@@ -207,10 +208,10 @@ class FaceThread(QThread):
                     self.currentFace.emit(beforeFace)
             # 새로고침 요청 있을경우
             else:
-                # 파일 새로고침 함수 Call
+                # 이미지 리프레쉬
                 self.face.refreshImageList()
 
-                # 새로고침 요청 False
+                # 요청 False로
                 self.requestRefresh = False
 
 # API Server Thread
@@ -234,6 +235,9 @@ class ApiServerThread(QThread):
             # photoFile (사진 파일)
         @self.flaskApp.route('/newface/', methods=['POST'])
         def addNewFace():
+            # Param Json으로 로드
+            params = json.loads(request.get_data(), encoding='utf-8')
+
             # 업로드한 사진 가져오기
             photoFile = request.files['photoFile']
 
@@ -247,8 +251,13 @@ class ApiServerThread(QThread):
                 )
 
             try:
+                fileName = datetime.today().strftime("%Y%m%d%H%M%S")
                 # 현재 날짜와 시간을 이름으로 faceimg 폴더에 저장
-                photoFile.save('./faceimg/' + datetime.today().strftime("%Y%m%d%H%M%S") + '.jpg')
+                photoFile.save('./faceimg/' + fileName + '.jpg')
+
+                faceDB = FaceDatabase()
+                faceDB.addNewProfile(params['name'], fileName)
+                faceDB.close()
 
                 # 새 사진 추가 알림
                 self.newPhotoAdded.emit(True)
@@ -288,17 +297,9 @@ class ApiServerThread(QThread):
                 )
 
             try:
-                # 세팅 파일 열기
-                settingFile = open('./facesetting/' + params['facename'] + '.ini', 'w')
-
-                # 세팅 텍스트 작성
-                settingText = \
-                    'clock=' + params['clock'] + '\n' + \
-                    'news=' + params['news'] + '\n' + \
-                    'weather=' + params['weather'] + '\n' + \
-                    'noti=' + params['noti']
-                settingFile.write(settingText)
-                settingFile.close()
+                faceDB = FaceDatabase()
+                faceDB.updateProfile(params['id'], params['clock'], params['news'],  params['weather'], params['noti'])
+                faceDB.close()
 
                 # 성공
                 return jsonify(
@@ -324,18 +325,14 @@ class ApiServerThread(QThread):
         # 얼굴 설정 리스트 불러오기
         @self.flaskApp.route('/getfacelist/')
         def getFaceList():
-            # 설정 파일 가져오기
-            filelist = os.listdir("./facesetting")
-            returnlist = []
-
-            for name in filelist:
-                # 리턴할 목록에 파일명만 담기
-                returnlist.append(Path(name).stem)
+            faceDB = FaceDatabase()
+            allProfile = faceDB.getAllProfile()
+            faceDB.close()
 
             return jsonify(
                 code=200,
                 success=True,
-                facelist=returnlist,
+                facelist=allProfile,
                 msg='OK'
             )
 
@@ -361,8 +358,6 @@ class ApiServerThread(QThread):
                     success=False,
                     msg='Empty Parameter'
                 )
-
-
 
         # Flask Run
         self.flaskApp.run(host="0.0.0.0", debug=True, use_reloader=False)

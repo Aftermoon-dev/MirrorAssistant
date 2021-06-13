@@ -3,6 +3,7 @@ import os
 import face_recognition
 import cv2
 import numpy as np
+from db import FaceDatabase
 
 
 class Face:
@@ -13,18 +14,18 @@ class Face:
         # 필요한 변수들 생성
         self.face_locations = []
         self.face_encodings = []
-        self.fileName = None
+        self.id = None
         self.check = True
 
-        # 얼굴 사진 폴더가 있다면
-        if os.path.isdir("./faceimg"):
-            # 해당 폴더의 파일명을 모두 불러온다
-            self.faceImageList = os.listdir("./faceimg")
-        # 없다면
-        else:
-            # 생성하고 빈 List 처리
-            os.makedirs("./faceimg")
-            self.faceImageList = []
+        faceDatabase = FaceDatabase()
+        profileDatas = faceDatabase.getAllProfile()
+
+        self.faceImageList = {}
+
+        for profile in profileDatas:
+            self.faceImageList[profile[2]] = profile[0]
+
+        faceDatabase.close()
 
         # 이미지 리스트 출력
         print('Face Image List :', self.faceImageList)
@@ -32,7 +33,7 @@ class Face:
         # 이미지 처리 시작
         self.frEncodingList = []
 
-        for imgFileName in self.faceImageList:
+        for imgFileName in self.faceImageList.keys():
             # 파일 이름을 통해 이미지 불러오기
             loadImg = face_recognition.load_image_file('./faceimg/{0}'.format(imgFileName))
 
@@ -75,14 +76,14 @@ class Face:
 
                 # 매치가 된다면
                 if matches[best_match_index]:
-                    # 해당 File 명을 설정
-                    self.fileName = self.faceImageList[best_match_index]
+                    # 해당 id 설정
+                    self.id = self.faceImageList[self.faceImageList.keys()[best_match_index]]
 
         # 체크 변수 값 변경
         self.check = not self.check
 
-        # 파일명 리턴
-        return self.fileName
+        # ID 리턴
+        return self.id
 
     # 카메라 릴리즈
     def cameraRelease(self):
@@ -93,16 +94,14 @@ class Face:
     def refreshImageList(self):
         print('Refresh Image List...')
 
-        # 새로운 리스트 불러오기
-        self.faceImageList = os.listdir("./faceimg")
+        faceDatabase = FaceDatabase()
+        profileDatas = faceDatabase.getAllProfile()
 
-        # 이미지 인코딩 리스트 처리
-        for imgFileName in self.faceImageList:
-            # 파일 이름을 통해 이미지 불러오기
-            loadImg = face_recognition.load_image_file('./faceimg/{0}'.format(imgFileName))
+        self.faceImageList = {}
 
-            # 얼굴 인식을 위한 인코딩 처리
-            loadImgEncoding = face_recognition.face_encodings(loadImg)[0]
+        for profile in profileDatas:
+            self.faceImageList[profile[2]] = profile[0]
 
-            # 인코딩 정보를 리스트에 Append
-            self.frEncodingList.append(loadImgEncoding)
+        # 이미지 리스트 출력
+        print('Face Image List :', self.faceImageList)
+        faceDatabase.close()
