@@ -1,9 +1,8 @@
-import hashlib
 import json
-import os
+import platform
 import sys
+import netifaces
 from datetime import datetime
-from pathlib import Path
 
 import schedule
 from PyQt5.QtCore import Qt, QTimer, QThread, pyqtSignal, pyqtSlot
@@ -17,6 +16,7 @@ from weather.weather import Weather
 from news.news import News
 from face.face import Face
 from face.db import FaceDatabase
+
 
 uiFile = uic.loadUiType("ui/main.ui")[0]
 
@@ -35,6 +35,17 @@ class WindowClass(QMainWindow, uiFile):
         self.setWindowTitle("MirrorAssistant")
 
         self.setupUi(self)
+
+        # Windows가 아니라면 (Test Enviroment)
+        if platform.system() != 'Windows':
+            # wlan0 NIC에서 IP 주소 불러오기
+            ipAddress = netifaces.ifaddresses('wlan0')[netifaces.AF_INET]['addr']
+            # 해당 주소 바탕으로 Text 설정
+            self.label_deviceip.setText('<html><head/><body><p align="right"><span style=" font-size:8pt;">http://{}:5000/</span></p></body></html>'.format(ipAddress))
+        # Windows라면
+        else:
+            # 해당 Text 비우기
+            self.label_deviceip.setText('')
 
         # 시계 설정
         self.setDateTime()
