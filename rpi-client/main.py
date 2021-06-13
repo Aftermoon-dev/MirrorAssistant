@@ -73,12 +73,19 @@ class WindowClass(QMainWindow, uiFile):
         self.currentFace = None
         self.faceThread = FaceThread()
         self.faceThread.start()
+
+        # 새 얼굴 인식 정보 Event 설정
         self.faceThread.currentFace.connect(self.setFaceUI)
 
-        # API 서버 쓰레드 설정
+        # API 서버 쓰레드 시작
         self.apiServerThread = ApiServerThread()
         self.apiServerThread.start()
+
+        # 신규 얼굴 Layout Event
         self.apiServerThread.newPhotoAdded.connect(self.refreshFace)
+
+        # 신규 Notification Event
+        self.apiServerThread.newNotification.connect(self.newNotification)
 
     # 시간 설정
     def setDateTime(self):
@@ -148,7 +155,7 @@ class WindowClass(QMainWindow, uiFile):
         try:
             faceDatabase = FaceDatabase()
 
-            # 파일명이 곧 ID이므로 해당 정보로 getProfile
+            # 넘어온 ID로 getProfile
             profileData = faceDatabase.getProfile(data)
 
             settingDict['clock'] = profileData[3]
@@ -173,6 +180,12 @@ class WindowClass(QMainWindow, uiFile):
     @pyqtSlot(bool)
     def refreshFace(self, data):
         self.faceThread.requestRefresh = data
+
+    # 새 알림 정보 추가
+    @pyqtSlot(dict)
+    def newNotification(self, data):
+        print(data)
+
 
     # Layout Position 설정
     # 0 - 왼쪽 위 / 1 - 오른쪽 위 / 2 - 왼쪽 아래 / 3 - 오른쪽 아래
@@ -217,7 +230,10 @@ class FaceThread(QThread):
 # API Server Thread
 class ApiServerThread(QThread):
     flaskApp = Flask(__name__)
+    flaskApp.config['JSON_AS_ASCII'] = False
+
     newPhotoAdded = pyqtSignal(bool)
+    newNotification = pyqtSignal(dict)
 
     def run(self):
         # Default Page
@@ -359,8 +375,15 @@ class ApiServerThread(QThread):
                     msg='Empty Parameter'
                 )
 
+            # 알림 정보 전송
+            notiDict = {}
+            notiDict['title'] = params['title']
+            notiDict['msg'] = params['msg']
+            notiDict['time'] = params['time']
+            self.newNotification.emit(notiDict)
+
         # Flask Run
-        self.flaskApp.run(host="0.0.0.0", debug=True, use_reloader=False)
+        sys.exit(self.flaskApp.run(host="0.0.0.0", debug=True, use_reloader=False))
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
