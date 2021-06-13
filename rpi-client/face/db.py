@@ -13,7 +13,7 @@ class FaceDatabase:
         self.database.close()
 
     def addNewProfile(self, name, imgName):
-        self.cursor.execute("INSERT INTO profile VALUES('{}', '{}');".format(name, imgName))
+        self.cursor.execute("INSERT INTO profile (name, imgName) VALUES('{}', '{}');".format(name, imgName))
         self.database.commit()
 
     def deleteProfile(self, _id):
