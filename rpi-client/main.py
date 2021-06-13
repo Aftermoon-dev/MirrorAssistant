@@ -280,7 +280,7 @@ class ApiServerThread(QThread):
         # 새 얼굴 등록 - POST only (사진 첨부)
         # Parameter
             # photoFile (사진 파일)
-        @self.flaskApp.route('/newface/', methods=['POST'])
+        @self.flaskApp.route('/newface', methods=['POST'])
         def addNewFace():
             # Param Json으로 로드
             params = json.loads(request.get_data(), encoding='utf-8')
@@ -330,7 +330,7 @@ class ApiServerThread(QThread):
             # news (뉴스 위치)
             # noti (알림 표시 위치)
         # 0 - 왼쪽 위 / 1 - 오른쪽 위 / 2 - 왼쪽 아래 / 3 - 오른쪽 아래
-        @self.flaskApp.route('/setfacelayout/', methods=['POST'])
+        @self.flaskApp.route('/setfacelayout', methods=['POST'])
         def setWindowLayout():
             # Param Json으로 로드
             params = json.loads(request.get_data(), encoding='utf-8')
@@ -370,7 +370,7 @@ class ApiServerThread(QThread):
                 )
 
         # 얼굴 설정 리스트 불러오기
-        @self.flaskApp.route('/getfacelist/')
+        @self.flaskApp.route('/getfacelist')
         def getFaceList():
             faceDB = FaceDatabase()
             allProfile = faceDB.getAllProfile()
