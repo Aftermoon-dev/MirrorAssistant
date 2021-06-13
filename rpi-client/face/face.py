@@ -74,7 +74,8 @@ class Face:
                 # 매치가 된다면
                 if matches[best_match_index]:
                     # 해당 id 설정
-                    self.id = self.faceImageList[self.faceImageList.keys()[best_match_index]]
+                    faceList = list(self.faceImageList.keys())
+                    self.id = self.faceImageList[faceList[best_match_index]]
 
         # 체크 변수 값 변경
         self.check = not self.check

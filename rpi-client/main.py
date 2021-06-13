@@ -142,7 +142,7 @@ class WindowClass(QMainWindow, uiFile):
                 .format(dustData['pm10'], self.weather.pm10Calculator(dustData['pm10']), dustData['pm25'], self.weather.pm25Calculator(dustData['pm25'])))
 
     # 얼굴에 따른 레이아웃 설정
-    @pyqtSlot(str)
+    @pyqtSlot(int)
     def setFaceUI(self, data):
         # ID 반환됨
         self.currentFace = data
@@ -199,7 +199,7 @@ class WindowClass(QMainWindow, uiFile):
 # 얼굴 인식 Thread
 class FaceThread(QThread):
     face = Face()
-    currentFace = pyqtSignal(str)
+    currentFace = pyqtSignal(int)
     requestRefresh = False
 
     def run(self):
