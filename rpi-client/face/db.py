@@ -10,6 +10,7 @@ class FaceDatabase:
         self.database.commit()
 
     def close(self):
+        self.cursor.close()
         self.database.close()
 
     def addNewProfile(self, name, imgName):

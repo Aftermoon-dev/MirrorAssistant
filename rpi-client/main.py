@@ -376,10 +376,23 @@ class ApiServerThread(QThread):
             allProfile = faceDB.getAllProfile()
             faceDB.close()
 
+            returnList = []
+            for profile in allProfile:
+                returnDict = {}
+                returnDict['id'] = profile[0]
+                returnDict['name'] = profile[1]
+                returnDict['filename'] = profile[2]
+                returnDict['clock'] = profile[3]
+                returnDict['news'] = profile[4]
+                returnDict['weather'] = profile[5]
+                returnDict['noti'] = profile[6]
+                returnDict['create'] = profile[7]
+                returnList.append(returnDict)
+
             return jsonify(
                 code=200,
                 success=True,
-                facelist=allProfile,
+                facelist=returnList,
                 msg='OK'
             )
 
