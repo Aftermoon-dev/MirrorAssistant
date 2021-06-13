@@ -39,7 +39,7 @@ class WindowClass(QMainWindow, uiFile):
         # Windows가 아니라면 (Test Enviroment)
         if platform.system() != 'Windows':
             # wlan0 NIC에서 IP 주소 불러오기
-            ipAddress = netifaces.ifaddresses('wlan0')[netifaces.AF_INET]['addr']
+            ipAddress = netifaces.ifaddresses('wlan0')[netifaces.AF_INET][0]['addr']
             # 해당 주소 바탕으로 Text 설정
             self.label_deviceip.setText('<html><head/><body><p align="right"><span style=" font-size:8pt;">http://{}:5000/</span></p></body></html>'.format(ipAddress))
         # Windows라면
