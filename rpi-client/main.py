@@ -347,14 +347,7 @@ class ApiServerThread(QThread):
                     success=True,
                     msg='OK'
                 )
-                # 파일 Not Found
-            except FileNotFoundError:
-                return jsonify(
-                    code=500,
-                    success=False,
-                    msg='File Not Found'
-                )
-                # 이외에는 Error
+            # 이외에는 Error
             except:
                 return jsonify(
                     code=500,
