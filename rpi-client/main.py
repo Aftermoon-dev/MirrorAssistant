@@ -323,6 +323,45 @@ class ApiServerThread(QThread):
                     msg='Error'
                 )
 
+        @self.flaskApp.route('/removeface', methods=['POST'])
+        def removeFace():
+            # Param Json으로 로드
+            params = json.loads(request.get_data(), encoding='utf-8')
+
+            # 길이 0이면 500
+            if len(params) == 0:
+                return jsonify(
+                    code=500,
+                    success=False,
+                    msg='Empty Parameter'
+                )
+
+            try:
+                faceDB = FaceDatabase()
+                faceDB.deleteProfile(params['id'])
+                faceDB.close()
+
+                # 성공
+                return jsonify(
+                    code=200,
+                    success=True,
+                    msg='OK'
+                )
+                # 파일 Not Found
+            except FileNotFoundError:
+                return jsonify(
+                    code=500,
+                    success=False,
+                    msg='File Not Found'
+                )
+                # 이외에는 Error
+            except:
+                return jsonify(
+                    code=500,
+                    success=False,
+                    msg='Error'
+                )
+
         # 얼굴 레이아웃 설정
         # Parameter
             # facename (얼굴 파일명)

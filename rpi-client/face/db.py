@@ -1,3 +1,4 @@
+import os
 import sqlite3
 
 class FaceDatabase:
@@ -18,6 +19,10 @@ class FaceDatabase:
         self.database.commit()
 
     def deleteProfile(self, _id):
+        self.cursor.execute("SELECT * from profile where _id = '{}';".format(_id))
+        deleteData = self.cursor.fetchall()
+        os.remove('./faceimg/' + deleteData[2])
+
         self.cursor.execute("DELETE from profile where _id = '{}';".format(_id))
         self.database.commit()
 
