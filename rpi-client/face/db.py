@@ -6,7 +6,7 @@ class FaceDatabase:
         self.database = sqlite3.connect('./face/facedb.db')
         self.cursor = self.database.cursor()
         self.cursor.execute("CREATE TABLE if not exists profile(_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
-                            "name TEXT NOT NULL, imgName TEXT, clock INTEGER DEFAULT(1), news INTEGER DEFAULT(3), weather INTEGER DEFAULT(0), noti INTEGER DEFAULT(2), newsId INTEGER DEFAULT(2),"
+                            "name TEXT NOT NULL, imgName TEXT, clock INTEGER DEFAULT(1), news INTEGER DEFAULT(3), weather INTEGER DEFAULT(0), noti INTEGER DEFAULT(2), newsId INTEGER DEFAULT(0),"
                             "createAt datetime DEFAULT(DATETIME('now', 'localtime')));")
         self.database.commit()
 

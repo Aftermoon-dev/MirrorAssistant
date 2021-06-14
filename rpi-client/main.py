@@ -391,6 +391,7 @@ class ApiServerThread(QThread):
         def setWindowLayout():
             # Param 로드
             params = request.form.to_dict()
+            print('setWindowLayout', params)
 
             # 길이 0이면 500
             if len(params) == 0:
@@ -462,6 +463,7 @@ class ApiServerThread(QThread):
         def newNews():
             # Param 로드
             params = request.form.to_dict()
+            print('Set News', params)
 
             # 길이 0이면 500
             if len(params) == 0:
