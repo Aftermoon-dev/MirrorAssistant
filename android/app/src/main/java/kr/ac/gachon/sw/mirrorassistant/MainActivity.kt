@@ -97,7 +97,11 @@ class MainActivity : AppCompatActivity() {
 
         binding.btnLayoutsave.setOnClickListener {
             if(!faceList.isNullOrEmpty()) {
-                Log.d("MainActivity", "ID ${faceList!![binding.spinnerUser.selectedItemPosition].id} Layout")
+                Log.d("MainActivity", "ID ${faceList!![binding.spinnerUser.selectedItemPosition].id} Layout" +
+                        " ${binding.spinnerClock.selectedItemPosition}" +
+                        " ${binding.spinnerNews.selectedItemPosition}" +
+                        " ${binding.spinnerWeather.selectedItemPosition}" +
+                        " ${binding.spinnerNoti.selectedItemPosition}")
                 setLayout(faceList!![binding.spinnerUser.selectedItemPosition].id,
                     binding.spinnerClock.selectedItemPosition,
                     binding.spinnerNews.selectedItemPosition,
