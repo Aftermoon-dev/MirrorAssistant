@@ -1,4 +1,3 @@
-import json
 import platform
 import sys
 import netifaces
@@ -18,7 +17,7 @@ from face.face import Face
 from face.db import FaceDatabase
 
 
-uiFile = uic.loadUiType("ui/main.ui")[0]
+uiFile = uic.loadUiType("./ui/main.ui")[0]
 
 class WindowClass(QMainWindow, uiFile):
     weather = Weather()
