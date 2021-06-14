@@ -40,6 +40,15 @@ class WindowClass(QMainWindow, uiFile):
         # 알림 담을 List
         self.notificationList = []
 
+        # 가져올 뉴스 번호
+        self.newsNum = 0
+
+        # 유저 데이터
+        self.currentUserData = []
+
+        # Notification Label List
+        self.notiLabels = [self.noti_1, self.noti_2, self.noti_3, self.noti_4, self.noti_5, self.noti_6, self.noti_7]
+
         # Windows가 아니라면 (Test Enviroment)
         if platform.system() != 'Windows':
             # wlan0 NIC에서 IP 주소 불러오기
@@ -90,7 +99,7 @@ class WindowClass(QMainWindow, uiFile):
         self.faceThread.start()
 
         # 새 얼굴 인식 정보 Event 설정
-        self.faceThread.currentFace.connect(self.setFaceUI)
+        self.faceThread.currentFace.connect(self.setUserData)
 
         # API 서버 쓰레드 시작
         self.apiServerThread = ApiServerThread()
@@ -115,7 +124,7 @@ class WindowClass(QMainWindow, uiFile):
             '</span></p></body></html>')
 
     def setNewsData(self):
-        newsList = self.news.getRecentNewsTitleList(self.news.newRss)
+        newsList = self.news.getRecentNewsTitleList(self.news.rssURL[self.newsNum])
 
         self.news_1.setText(
             '<html><head/><body><p><span style=" font-size:12pt; font-weight:600; color:#ffffff;">' + newsList[0]
@@ -158,7 +167,7 @@ class WindowClass(QMainWindow, uiFile):
 
     # 얼굴에 따른 레이아웃 설정
     @pyqtSlot(int)
-    def setFaceUI(self, data):
+    def setUserData(self, data):
         # ID 반환됨
         self.currentFace = data
 
@@ -171,12 +180,16 @@ class WindowClass(QMainWindow, uiFile):
             faceDatabase = FaceDatabase()
 
             # 넘어온 ID로 getProfile
-            profileData = faceDatabase.getProfile(data)
+            self.currentUserData = faceDatabase.getProfile(data)
 
-            settingDict['clock'] = profileData[3]
-            settingDict['news'] = profileData[4]
-            settingDict['weather'] = profileData[5]
-            settingDict['noti'] = profileData[6]
+            # 레이아웃 숫자 설정
+            settingDict['clock'] = self.currentUserData[3]
+            settingDict['news'] = self.currentUserData[4]
+            settingDict['weather'] = self.currentUserData[5]
+            settingDict['noti'] = self.currentUserData[6]
+
+            # 뉴스 숫자 설정
+            self.newsNum = self.currentUserData[7]
 
             faceDatabase.close()
         # 에러 발생시
@@ -186,10 +199,14 @@ class WindowClass(QMainWindow, uiFile):
             settingDict['news'] = 3
             settingDict['weather'] = 0
             settingDict['noti'] = 2
+
+            # 기본 뉴스로
+            self.newsNum = 0
         finally:
             # 레이아웃 설정
-            print(settingDict)
+            print('Layout Dict : {}, News Number : {}'.format(settingDict, self.newsNum))
             self.setLayout(settingDict)
+            self.setNewsData()
 
     # 얼굴 파일 새로고침 요청
     @pyqtSlot(bool)
@@ -197,8 +214,8 @@ class WindowClass(QMainWindow, uiFile):
         self.faceThread.requestRefresh = data
 
     # 새 알림 정보 추가
-    # [시간] [타이틀] 메시지
-    # [23:12] [ㅇㅇ] ㅇㅇ
+    # [앱이름] [시간] [타이틀] 메시지
+    # [카카오톡] [23:12] [ㅇㅇ] ㅇㅇ
     @pyqtSlot(dict)
     def newNotification(self, data):
         print('new notification received', data)
@@ -211,12 +228,17 @@ class WindowClass(QMainWindow, uiFile):
             # 마지막 요소 제거
             self.notificationList.pop()
 
-        # 각 Label 설정
-        notiLabels = [self.noti_1, self.noti_2, self.noti_3, self.noti_4, self.noti_5, self.noti_6, self.noti_7]
         i = 0
         for notification in self.notificationList:
-            notiLabels[i].setText('<html><head/><body><p><span style=" font-size:12pt; font-weight:600;">[{}] [{}] {}</span></p></body></html>'.format(notification['time'], notification['title'], notification['msg']))
+            self.notiLabels[i].setText('<html><head/><body><p><span style=" font-size:12pt; font-weight:600;">[{}] [{}] [{}] {}</span></p></body></html>'.format(notification['appName'], notification['time'], notification['title'], notification['msg']))
             i += 1
+
+    # 뉴스 설정
+    @pyqtSlot(int)
+    def newNews(self, data):
+        print('New News Number Received', data)
+        self.newsNum = data
+        self.setNewsData()
 
     # Layout Position 설정
     # 0 - 왼쪽 위 / 1 - 오른쪽 위 / 2 - 왼쪽 아래 / 3 - 오른쪽 아래
@@ -282,14 +304,14 @@ class ApiServerThread(QThread):
             # photoFile (사진 파일)
         @self.flaskApp.route('/newface', methods=['POST'])
         def addNewFace():
-            # Param Json으로 로드
-            params = json.loads(request.get_data(), encoding='utf-8')
+            # Request Data
+            requestData = request.form.to_dict()
 
             # 업로드한 사진 가져오기
             photoFile = request.files['photoFile']
 
             # 사진이 제대로 안 가져와진 경우
-            if type(photoFile) is None:
+            if requestData is None and photoFile is None:
                 # 에러
                 return jsonify(
                     code=500,
@@ -303,7 +325,7 @@ class ApiServerThread(QThread):
                 photoFile.save('./faceimg/' + fileName + '.jpg')
 
                 faceDB = FaceDatabase()
-                faceDB.addNewProfile(params['name'], fileName)
+                faceDB.addNewProfile(requestData['name'], fileName + '.jpg')
                 faceDB.close()
 
                 # 새 사진 추가 알림
@@ -315,18 +337,20 @@ class ApiServerThread(QThread):
                     success=True,
                     msg='OK'
                 )
-            except:
+            except Exception as e:
                 # 에러 발생시 500
+                print('error', str(e))
                 return jsonify(
                     code=500,
                     success=False,
-                    msg='Error'
+                    msg='Error / {}'.format(str(e))
                 )
 
         @self.flaskApp.route('/removeface', methods=['POST'])
         def removeFace():
-            # Param Json으로 로드
-            params = json.loads(request.get_data(), encoding='utf-8')
+            # Param 로드
+            params = request.form.to_dict()
+            print(params)
 
             # 길이 0이면 500
             if len(params) == 0:
@@ -348,11 +372,12 @@ class ApiServerThread(QThread):
                     msg='OK'
                 )
             # 이외에는 Error
-            except:
+            except Exception as e:
+                print('error', str(e))
                 return jsonify(
                     code=500,
                     success=False,
-                    msg='Error'
+                    msg='Error - {}'.format(str(e))
                 )
 
         # 얼굴 레이아웃 설정
@@ -364,8 +389,8 @@ class ApiServerThread(QThread):
         # 0 - 왼쪽 위 / 1 - 오른쪽 위 / 2 - 왼쪽 아래 / 3 - 오른쪽 아래
         @self.flaskApp.route('/setfacelayout', methods=['POST'])
         def setWindowLayout():
-            # Param Json으로 로드
-            params = json.loads(request.get_data(), encoding='utf-8')
+            # Param 로드
+            params = request.form.to_dict()
 
             # 길이 0이면 500
             if len(params) == 0:
@@ -377,7 +402,7 @@ class ApiServerThread(QThread):
 
             try:
                 faceDB = FaceDatabase()
-                faceDB.updateProfile(params['id'], params['clock'], params['news'],  params['weather'], params['noti'])
+                faceDB.updateLayout(params['id'], params['clock'], params['news'],  params['weather'], params['noti'])
                 faceDB.close()
 
                 # 성공
@@ -386,15 +411,9 @@ class ApiServerThread(QThread):
                     success=True,
                     msg='OK'
                 )
-            # 파일 Not Found
-            except FileNotFoundError:
-                return jsonify(
-                    code=500,
-                    success=False,
-                    msg='File Not Found'
-                )
-            # 이외에는 Error
-            except:
+            # Error
+            except Exception as e:
+                print('error', str(e))
                 return jsonify(
                     code=500,
                     success=False,
@@ -418,7 +437,8 @@ class ApiServerThread(QThread):
                 returnDict['news'] = profile[4]
                 returnDict['weather'] = profile[5]
                 returnDict['noti'] = profile[6]
-                returnDict['create'] = profile[7]
+                returnDict['newsid'] = profile[7]
+                returnDict['create'] = profile[8]
                 returnList.append(returnDict)
 
             return jsonify(
@@ -437,11 +457,45 @@ class ApiServerThread(QThread):
                 msg='OK'
             )
 
+        # News 설정
+        @self.flaskApp.route('/setNews', methods=['POST'])
+        def newNews():
+            # Param 로드
+            params = request.form.to_dict()
+
+            # 길이 0이면 500
+            if len(params) == 0:
+                return jsonify(
+                    code=500,
+                    success=False,
+                    msg='Empty Parameter'
+                )
+
+            try:
+                faceDB = FaceDatabase()
+                faceDB.updateNews(params['id'], params['newsid'])
+                faceDB.close()
+
+                # 성공
+                return jsonify(
+                    code=200,
+                    success=True,
+                    msg='OK'
+                )
+            # Error
+            except Exception as e:
+                print('error', str(e))
+                return jsonify(
+                    code=500,
+                    success=False,
+                    msg='Error'
+                )
+
         # Notification 받기
         @self.flaskApp.route('/newnoti', methods=['POST'])
         def newNotification():
-            # Param Json으로 로드
-            params = json.loads(request.get_data(), encoding='utf-8')
+            # Param 로드
+            params = request.form.to_dict()
 
             # 길이 0이면 500
             if len(params) == 0:
@@ -453,10 +507,17 @@ class ApiServerThread(QThread):
 
             # 알림 정보를 UI에 넘김
             notiDict = {}
+            notiDict['appName'] = params['appName']
             notiDict['title'] = params['title']
             notiDict['msg'] = params['msg']
             notiDict['time'] = params['time']
             self.newNotification.emit(notiDict)
+
+            return jsonify(
+                code=200,
+                success=True,
+                msg='OK'
+            )
 
         # Flask Run
         sys.exit(self.flaskApp.run(host="0.0.0.0", debug=True, use_reloader=False))

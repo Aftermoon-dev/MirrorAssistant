@@ -311,9 +311,9 @@ font: 9pt &quot;NanumGothic&quot;;</string>
    <widget class="QLabel" name="weather_desc">
     <property name="geometry">
      <rect>
-      <x>140</x>
+      <x>60</x>
       <y>150</y>
-      <width>221</width>
+      <width>361</width>
       <height>41</height>
      </rect>
     </property>

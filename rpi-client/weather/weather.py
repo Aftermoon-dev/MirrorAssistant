@@ -28,6 +28,9 @@ class Weather:
         return hours
 
     def pm10Calculator(self, pm10):
+        if pm10 == '-':
+            return '없음'
+
         pm10 = int(pm10)
 
         if 0 <= pm10 <= 30:
@@ -42,6 +45,9 @@ class Weather:
             return '알 수 없음'
 
     def pm25Calculator(self, pm25):
+        if pm25 == '-':
+            return '없음'
+
         pm25 = int(pm25)
 
         if 0 <= pm25 <= 15:
