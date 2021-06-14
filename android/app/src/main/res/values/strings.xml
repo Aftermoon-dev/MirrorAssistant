@@ -1,15 +1,67 @@
 <resources>
     <string name="app_name">MirrorAssistant</string>
     <string name="setting">설정</string>
+    <string name="error">에러가 발생했습니다.</string>
+    <string name="save">저장</string>
 
     <string name="connect">연결</string>
     <string name="connect_title">MirrorAssistant와 연결</string>
-    <string name="connect_msg">MirrorAssistant의 아래에 표시되는 주소를 입력해주세요.</string>
-    <string name="connect_hint">http://192.168.0.22:8000/</string>
+    <string name="connect_msg">MirrorAssistant에서 표시된 주소를 입력해주세요.</string>
+    <string name="connect_hint">http://192.168.0.29:5000/</string>
+    <string name="connected">연결되었습니다.</string>
+    <string name="connect_notvalidserver">올바른 주소를 입력해주세요.</string>
+    <string name="connect_notvalidurl">연결에 실패했습니다. 주소를 확인해주세요.</string>
 
-    <string name="menu_image">사용자 설정</string>
-    <string name="menu_image_nodata">설정된 얼굴이 없습니다.</string>
-    <string name="menu_image_add">새 얼굴 추가하기</string>
+    <string name="noti_permission_title">권한 안내</string>
+    <string name="noti_permission_msg">핸드폰의 알림을 MirrorAssistant로 받아보시려면 권한 허용이 필요합니다.\n확인을 누르신 후 MirrorAssistant를 활성화 해주세요!</string>
+
+    <string name="menu_nouser_error">사용자 생성 후 사용이 가능합니다.</string>
+    <string name="menu_setcomplete">설정되었습니다.</string>
+    <string name="menu_alreadyset">기존 설정 값과 동일합니다.</string>
+
+    <string name="menu_user">사용자 선택</string>
+    <string name="menu_user_nodata">사용자 데이터가 없습니다.</string>
+    <string name="menu_user_add">사용자 추가</string>
+    <string name="menu_user_remove">사용자 제거</string>
+    <string name="menu_user_add_title">이름 입력</string>
+    <string name="menu_user_add_msg">지정할 이름을 입력해주세요.</string>
+    <string name="menu_user_added">추가되었습니다.</string>
+    <string name="menu_user_deleted">삭제되었습니다.</string>
 
     <string name="menu_layout">레이아웃 설정</string>
+    <string name="menu_layout_clock">시계</string>
+    <string name="menu_layout_news">뉴스</string>
+    <string name="menu_layout_weather">날씨</string>
+    <string name="menu_layout_noti">알림</string>
+
+    <string name="menu_news">뉴스 설정</string>
+    <string name="menu_news_category">카테고리 선택</string>
+    <string name="menu_news_setcomplete">설정되었습니다. 다음 새로고침부터 적용됩니다.</string>
+
+    <string name="menu_noti">알림 전송 설정</string>
+    <string name="menu_noti_enable">알림 전송 활성화</string>
+
+    <string name="noti_service_name">알림 수집 서비스</string>
+    <string name="noti_service_id">notiservice</string>
+    <string name="noti_serivce_noti_title">MirrorAssistant 작동중</string>
+    <string name="noti_service_noti_msg">알림 수집중입니다.</string>
+
+    <string-array name="layout">
+        <item>왼쪽 위</item>
+        <item>오른쪽 위</item>
+        <item>왼쪽 아래</item>
+        <item>오른쪽 아래</item>
+    </string-array>
+
+    <string-array name="news">
+        <item>속보</item>
+        <item>정치</item>
+        <item>경제</item>
+        <item>사회</item>
+        <item>지역</item>
+        <item>국제</item>
+        <item>문화</item>
+        <item>연예</item>
+        <item>날씨</item>
+    </string-array>
 </resources>

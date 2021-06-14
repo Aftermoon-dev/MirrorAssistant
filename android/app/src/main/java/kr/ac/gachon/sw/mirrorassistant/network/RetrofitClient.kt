@@ -3,13 +3,19 @@ package kr.ac.gachon.sw.mirrorassistant.network
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-class RetrofitClient {
+object RetrofitClient {
     private var retrofitClient: Retrofit? = null
 
-    fun getRetrofitClient(baseUrl: String) {
+    fun getNewRetrofitClient(baseUrl: String): Retrofit? {
         retrofitClient = Retrofit.Builder()
             .baseUrl(baseUrl)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
+        return retrofitClient
     }
+
+    fun getCurrentRetrofitClient(): Retrofit? {
+        return retrofitClient
+    }
+
 }
