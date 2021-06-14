@@ -180,7 +180,7 @@ class WindowClass(QMainWindow, uiFile):
             faceDatabase = FaceDatabase()
 
             # 넘어온 ID로 getProfile
-            self.currentUserData = faceDatabase.getProfile(data)
+            self.currentUserData = faceDatabase.getProfile(data)[0]
 
             # 레이아웃 숫자 설정
             settingDict['clock'] = self.currentUserData[3]
@@ -189,7 +189,7 @@ class WindowClass(QMainWindow, uiFile):
             settingDict['noti'] = self.currentUserData[6]
 
             # 뉴스 숫자 설정
-            self.newsNum = self.currentUserData[0][7]
+            self.newsNum = self.currentUserData[7]
 
             self.setLayout(settingDict)
 
