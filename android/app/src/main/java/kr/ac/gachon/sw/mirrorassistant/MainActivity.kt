@@ -83,8 +83,8 @@ class MainActivity : AppCompatActivity() {
             if(!faceList.isNullOrEmpty()) {
                 // 이미 해당 News가 설정 값이 아니라면
                 if(faceList!![binding.spinnerUser.selectedItemPosition].newsid != binding.spinnerNewscategory.selectedItemPosition) {
-                    Log.d("MainActivity", "ID {$binding.spinnerUser.selectedItemPosition} - News ID ${binding.spinnerNewscategory.selectedItemPosition}")
-                    setNews(binding.spinnerUser.selectedItemPosition, binding.spinnerNewscategory.selectedItemPosition)
+                    Log.d("MainActivity", "ID ${faceList!![binding.spinnerUser.selectedItemPosition].id} - News ID ${binding.spinnerNewscategory.selectedItemPosition}")
+                    setNews(faceList!![binding.spinnerUser.selectedItemPosition].id, binding.spinnerNewscategory.selectedItemPosition)
                 }
                 else {
                     Toast.makeText(this@MainActivity, R.string.menu_alreadyset, Toast.LENGTH_SHORT).show()
@@ -97,7 +97,8 @@ class MainActivity : AppCompatActivity() {
 
         binding.btnLayoutsave.setOnClickListener {
             if(!faceList.isNullOrEmpty()) {
-                setLayout(binding.spinnerUser.selectedItemPosition,
+                Log.d("MainActivity", "ID ${faceList!![binding.spinnerUser.selectedItemPosition].id} Layout")
+                setLayout(faceList!![binding.spinnerUser.selectedItemPosition].id,
                     binding.spinnerClock.selectedItemPosition,
                     binding.spinnerNews.selectedItemPosition,
                     binding.spinnerWeather.selectedItemPosition,

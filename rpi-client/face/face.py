@@ -1,3 +1,5 @@
+import os.path
+
 import face_recognition
 import cv2
 import numpy as np
@@ -13,6 +15,9 @@ class Face:
         self.face_encodings = []
         self.id = None
         self.check = True
+
+        if not os.path.exists('./faceimg'):
+            os.makedirs('./faceimg')
 
         faceDatabase = FaceDatabase()
         profileDatas = faceDatabase.getAllProfile()
