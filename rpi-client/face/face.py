@@ -47,7 +47,7 @@ class Face:
                 continue
 
             # 인코딩 정보를 리스트에 Append
-            self.frEncodingList.append(loadImgEncoding)
+            self.frEncodingList.append(loadImgEncoding[0])
 
     # 얼굴 인식
     # 해당 함수는 무한 Loop가 필요함
@@ -69,6 +69,8 @@ class Face:
             # 얼굴 인코딩
             self.face_encodings = face_recognition.face_encodings(rgb_small_frame, self.face_locations)
 
+            faceList = list(self.faceImageList.keys())
+
             # 인코딩 데이터 체크
             for face_encoding in self.face_encodings:
                 # 등록된 얼굴중 가장 유사한 얼굴을 찾음
@@ -83,7 +85,6 @@ class Face:
                 # 매치가 된다면
                 if matches[best_match_index]:
                     # 해당 id 설정
-                    faceList = list(self.faceImageList.keys())
                     self.id = self.faceImageList[faceList[best_match_index]]
 
         # 체크 변수 값 변경

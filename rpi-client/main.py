@@ -191,6 +191,13 @@ class WindowClass(QMainWindow, uiFile):
             # 뉴스 숫자 설정
             self.newsNum = self.currentUserData[7]
 
+            self.setLayout(settingDict)
+
+            # 레이아웃 설정
+            print('Layout Dict : {}, News Number : {}'.format(settingDict, self.newsNum))
+            self.setLayout(settingDict)
+            self.setNewsData()
+
             faceDatabase.close()
         # 에러 발생시
         except:
@@ -202,11 +209,12 @@ class WindowClass(QMainWindow, uiFile):
 
             # 기본 뉴스로
             self.newsNum = 0
-        finally:
+
             # 레이아웃 설정
             print('Layout Dict : {}, News Number : {}'.format(settingDict, self.newsNum))
             self.setLayout(settingDict)
             self.setNewsData()
+
 
     # 얼굴 파일 새로고침 요청
     @pyqtSlot(bool)
@@ -244,6 +252,7 @@ class WindowClass(QMainWindow, uiFile):
     # 0 - 왼쪽 위 / 1 - 오른쪽 위 / 2 - 왼쪽 아래 / 3 - 오른쪽 아래
     def setLayout(self, settingDict):
         layoutPosition = [[10, 20], [530, 20], [10, 320], [530, 320]]
+        print(settingDict)
         self.timePanel.move(layoutPosition[settingDict['clock']][0], layoutPosition[settingDict['clock']][1])
         self.weatherPanel.move(layoutPosition[settingDict['weather']][0], layoutPosition[settingDict['weather']][1])
         self.newsPanel.move(layoutPosition[settingDict['news']][0], layoutPosition[settingDict['news']][1])
