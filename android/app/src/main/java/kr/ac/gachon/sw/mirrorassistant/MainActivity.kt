@@ -296,7 +296,7 @@ class MainActivity : AppCompatActivity() {
      */
     private fun removeUser(id: Int) {
         loadingDialog.show()
-        val callResponse: Call<BaseResponse> = apiCall!!.removeFace(id + 1)
+        val callResponse: Call<BaseResponse> = apiCall!!.removeFace(id)
 
         callResponse.enqueue(object : Callback<BaseResponse> {
             override fun onResponse(call: Call<BaseResponse>, response: Response<BaseResponse>) {
@@ -370,7 +370,7 @@ class MainActivity : AppCompatActivity() {
      */
     private fun setLayout(id: Int, clock: Int, news: Int, weather: Int, noti: Int) {
         loadingDialog.show()
-        val callResponse: Call<BaseResponse> = apiCall!!.setFaceLayout(id + 1, clock, news, weather, noti)
+        val callResponse: Call<BaseResponse> = apiCall!!.setFaceLayout(id, clock, news, weather, noti)
 
         callResponse.enqueue(object : Callback<BaseResponse> {
             override fun onResponse(call: Call<BaseResponse>, response: Response<BaseResponse>) {
@@ -404,7 +404,7 @@ class MainActivity : AppCompatActivity() {
      * 뉴스 설정
      */
     private fun setNews(id: Int, newsId: Int) {
-        val callResponse: Call<BaseResponse> = apiCall!!.setNews(id + 1, newsId)
+        val callResponse: Call<BaseResponse> = apiCall!!.setNews(id, newsId)
 
         loadingDialog.show()
         callResponse.enqueue(object : Callback<BaseResponse> {
