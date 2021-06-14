@@ -109,6 +109,24 @@ class Face:
         for profile in profileDatas:
             self.faceImageList[profile[2]] = profile[0]
 
+        faceDatabase.close()
+
         # 이미지 리스트 출력
         print('Face Image List :', self.faceImageList)
-        faceDatabase.close()
+
+        # 이미지 처리 시작
+        self.frEncodingList = []
+
+        for imgFileName in self.faceImageList.keys():
+            # 파일 이름을 통해 이미지 불러오기
+            loadImg = face_recognition.load_image_file('./faceimg/{0}'.format(imgFileName))
+
+            # 얼굴 인식을 위한 인코딩 처리
+            loadImgEncoding = face_recognition.face_encodings(loadImg)
+
+            if len(loadImgEncoding) <= 0:
+                print('Face Not Found ({})'.format(imgFileName))
+                continue
+
+            # 인코딩 정보를 리스트에 Append
+            self.frEncodingList.append(loadImgEncoding)
