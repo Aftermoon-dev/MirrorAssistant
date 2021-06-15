@@ -11,7 +11,7 @@
 
 ## Preview
 <p align="center">
- Coming Soon
+ <img src="https://user-images.githubusercontent.com/3215313/122054103-55e1bf80-ce22-11eb-8a07-a0e2fe50306b.png" width="50%">
 </p>
 
 ## Function
