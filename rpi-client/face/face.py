@@ -15,6 +15,7 @@ class Face:
         self.face_encodings = []
         self.id = None
         self.check = True
+        self.isRefresh = False
 
         if not os.path.exists('./faceimg'):
             os.makedirs('./faceimg')
@@ -62,7 +63,7 @@ class Face:
         rgb_small_frame = small_frame[:, :, ::-1]
 
         # 다른 프레임 체크인지 확인
-        if self.check:
+        if self.check and not self.isRefresh:
             # 얼굴 위치 로드
             self.face_locations = face_recognition.face_locations(rgb_small_frame)
 
@@ -78,14 +79,20 @@ class Face:
 
                 # 얼굴이 얼마나 유사한가?
                 face_distances = face_recognition.face_distance(self.frEncodingList, face_encoding)
-
-                # 가장 유사한 얼굴 Index 찾음
-                best_match_index = np.argmin(face_distances)
-
-                # 매치가 된다면
-                if matches[best_match_index]:
-                    # 해당 id 설정
-                    self.id = self.faceImageList[faceList[best_match_index]]
+                
+                if len(face_distances) > 0:
+                    # 가장 유사한 얼굴 Index 찾음
+                    best_match_index = np.argmin(face_distances)
+               
+                
+                    if len(matches) <= best_match_index:
+                        print('matches problem - continue')
+                        continue
+    
+                    # 매치가 된다면
+                    if matches[best_match_index]:
+                        # 해당 id 설정
+                        self.id = self.faceImageList[faceList[best_match_index]]
 
         # 체크 변수 값 변경
         self.check = not self.check
@@ -100,6 +107,8 @@ class Face:
 
     # 이미지 목록 새로고침
     def refreshImageList(self):
+        self.isRefresh = True
+
         print('Refresh Image List...')
 
         faceDatabase = FaceDatabase()
@@ -130,4 +139,6 @@ class Face:
                 continue
 
             # 인코딩 정보를 리스트에 Append
-            self.frEncodingList.append(loadImgEncoding)
+            self.frEncodingList.append(loadImgEncoding[0])
+
+        self.isRefresh = False

@@ -109,7 +109,13 @@ class WindowClass(QMainWindow, uiFile):
 
         # 신규 Notification Event
         self.apiServerThread.newNotification.connect(self.newNotification)
+        
+        # Change Personal Setting
+        self.apiServerThread.databaseUpdate.connect(self.databaseUpdate)
 
+        # Change News Setting
+        self.apiServerThread.newsUpdate.connect(self.newsUpdate)
+        
     # 시간 설정
     def setDateTime(self):
         now = datetime.now()
@@ -214,13 +220,72 @@ class WindowClass(QMainWindow, uiFile):
             print('Layout Dict : {}, News Number : {}'.format(settingDict, self.newsNum))
             self.setLayout(settingDict)
             self.setNewsData()
+    
+    # DB Update
+    @pyqtSlot(str)
+    def databaseUpdate(self, data):
+        if self.currentUserData and int(data) == self.currentUserData[0]:
+            print('current face db update')
+            
+            # 설정 담을 Dictonary
+            settingDict = {}
 
+            try:
+                faceDatabase = FaceDatabase()
 
+                # 넘어온 ID로 getProfile
+                self.currentUserData = faceDatabase.getProfile(data)[0]
+
+                # 레이아웃 숫자 설정
+                settingDict['clock'] = self.currentUserData[3]
+                settingDict['news'] = self.currentUserData[4]
+                settingDict['weather'] = self.currentUserData[5]
+                settingDict['noti'] = self.currentUserData[6]
+
+                # 뉴스 숫자 설정
+                self.newsNum = self.currentUserData[7]
+
+                self.setLayout(settingDict)
+
+                # 레이아웃 설정
+                print('Layout Dict : {}, News Number : {}'.format(settingDict, self.newsNum))
+                self.setLayout(settingDict)
+                self.setNewsData()
+
+                faceDatabase.close()
+            # 에러 발생시
+            except Exception as e:
+                print('error', str(e))
+                # 딕셔너리에 기본 Layout
+                settingDict['clock'] = 1
+                settingDict['news'] = 3
+                settingDict['weather'] = 0
+                settingDict['noti'] = 2
+
+                # 기본 뉴스로
+                self.newsNum = 0
+
+                # 레이아웃 설정
+                print('Layout Dict : {}, News Number : {}'.format(settingDict, self.newsNum))
+                self.setLayout(settingDict)
+                self.setNewsData()
+        else:
+            print('db update but not current face')
+    
+    @pyqtSlot(dict)
+    def newsUpdate(self, data):
+        if self.currentUserData and int(data['id']) == self.currentUserData[0]:
+            print('current face! - changed news to', data['newsid'])
+            self.newsNum = int(data['newsid'])
+            self.setNewsData()
+        else:
+            print('not current face, news not update')
+    
     # 얼굴 파일 새로고침 요청
     @pyqtSlot(bool)
     def refreshFace(self, data):
-        self.faceThread.requestRefresh = data
-
+        self.faceThread.requestRefresh = True
+        
     # 새 알림 정보 추가
     # [앱이름] [시간] [타이틀] 메시지
     # [카카오톡] [23:12] [ㅇㅇ] ㅇㅇ
@@ -288,6 +353,8 @@ class FaceThread(QThread):
                 # 이미지 리프레쉬
                 self.face.refreshImageList()
 
+                self.sleep(2)
+
                 # 요청 False로
                 self.requestRefresh = False
 
@@ -298,6 +365,8 @@ class ApiServerThread(QThread):
 
     newPhotoAdded = pyqtSignal(bool)
     newNotification = pyqtSignal(dict)
+    databaseUpdate = pyqtSignal(str)
+    newsUpdate = pyqtSignal(dict)
 
     def run(self):
         # Default Page
@@ -416,6 +485,7 @@ class ApiServerThread(QThread):
                 faceDB = FaceDatabase()
                 faceDB.updateLayout(params['id'], params['clock'], params['news'],  params['weather'], params['noti'])
                 faceDB.close()
+                self.databaseUpdate.emit(params['id'])
 
                 # 성공
                 return jsonify(
@@ -488,6 +558,8 @@ class ApiServerThread(QThread):
                 faceDB = FaceDatabase()
                 faceDB.updateNews(params['id'], params['newsid'])
                 faceDB.close()
+                
+                self.newsUpdate.emit(params)
 
                 # 성공
                 return jsonify(
